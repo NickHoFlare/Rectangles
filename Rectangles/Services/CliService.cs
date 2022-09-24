@@ -4,8 +4,22 @@ namespace Rectangles.Services
 {
     public interface ICliService
     {
+        /// <summary>
+        /// This is used when displaying canned messages to welcome the user, and in response to user input
+        /// </summary>
+        /// <param name="action"></param>
         void DisplayMessage(string action);
+
+        /// <summary>
+        /// This is used to make "error" messages more prominent to the user
+        /// </summary>
+        /// <param name="message"></param>
         void DisplayError(string message);
+
+        /// <summary>
+        /// This is used to make "success" messages more prominent to the user
+        /// </summary>
+        /// <param name="message"></param>
         void DisplaySuccess(string message);
     }
 
@@ -36,16 +50,13 @@ namespace Rectangles.Services
                     Console.WriteLine(Messages.CoordinatesInstruction);
                     Console.WriteLine(Messages.ExampleCoordinatesInput);
                     break;
-                case GameAction.DisplayGrid:
-                    Console.WriteLine("TODO: Display grid!");
-                    break;
                 case GameAction.CreateGrid:
                     Console.WriteLine(Messages.GridCreationInstruction);
                     Console.WriteLine(Messages.AdditionalGridCreationInstruction);
                     Console.WriteLine(Messages.ExampleGridInput);
                     break;
                 default:
-                    Console.WriteLine("Input not recognized. Please try again.");
+                    Console.WriteLine(Messages.UnrecognizedInput);
                     break;
             }
         }

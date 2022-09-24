@@ -28,6 +28,8 @@ EXIT rectangles";
             public const string CoordinatesInstruction = @"Please provide 0-indexed x and y coordinates in the format ""x,y""";
             public const string ExampleCoordinatesInput = "Example: 6,10";
             public const string CommandPrompt = "> ";
+            public const string UnrecognizedInput = "Input not recognized. Please try again";
+            public const string Exception = "Something went wrong. Press any key to exit";
         }
 
         public static class GameAction
@@ -41,6 +43,21 @@ EXIT rectangles";
             public const string CreateGrid = "CREATE";
             public const string Exit = "EXIT";
             public const string Unknown = "UNKNOWN";
+            public const string Exception = "EXCEPTION";
+        }
+
+        public static class Ascii
+        {
+            // <summary>
+            /// ASCII 35 translates to '#'. This represents an empty cell in the grid.
+            /// </summary>
+            public const string Empty = "#";
+
+            /// <summary>
+            /// ASCII 36 translates to '&'. This shall represent the 'first' rectangle. 
+            /// Subsequent characters shall represent further unique rectangles.
+            /// </summary>
+            public const int First = 36;
         }
     }
 }

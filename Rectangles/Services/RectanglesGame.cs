@@ -24,47 +24,51 @@ namespace Rectangles.Services
         {
             var activeGame = true;
             
-            // Grid is null, trigger first-time setup of grid
-            if (_grid == null)
+            // trigger first-time setup of grid
+            FirstTimeSetup();
+
+            if (_grid != null)
             {
-                FirstTimeSetup();
-            }
-
-            // Begin game loop
-            while (activeGame)
-            {
-                Console.Write(Messages.CommandPrompt);
-
-                var input = Console.ReadLine() ?? string.Empty;
-
-                switch (input.ToUpperInvariant())
+                // Begin game loop
+                while (activeGame)
                 {
-                    case GameAction.Menu:
-                        _cliService.DisplayMessage(GameAction.Menu);
-                        break;
-                    case GameAction.PlaceRectangle:
-                        _actionsService.PlaceRectangle();
-                        break;
-                    case GameAction.FindRectangle:
-                        _actionsService.FindRectangle();
-                        break;
-                    case GameAction.RemoveRectangle:
-                        _actionsService.RemoveRectangle();
-                        break;
-                    case GameAction.DisplayGrid:
-                        _actionsService.DisplayGrid();
-                        break;
-                    case GameAction.CreateGrid:
-                        _grid = _actionsService.CreateGrid();
-                        break;
-                    case GameAction.Exit:
-                        _cliService.DisplayMessage(GameAction.Exit);
-                        activeGame = false;
-                        break;
-                    default:
-                        _cliService.DisplayMessage(GameAction.Unknown);
-                        break;
+                    Console.Write(Messages.CommandPrompt);
+
+                    var input = Console.ReadLine() ?? string.Empty;
+
+                    switch (input.ToUpperInvariant())
+                    {
+                        case GameAction.Menu:
+                            _cliService.DisplayMessage(GameAction.Menu);
+                            break;
+                        case GameAction.PlaceRectangle:
+                            _actionsService.PlaceRectangle();
+                            break;
+                        case GameAction.FindRectangle:
+                            _actionsService.FindRectangle();
+                            break;
+                        case GameAction.RemoveRectangle:
+                            _actionsService.RemoveRectangle();
+                            break;
+                        case GameAction.DisplayGrid:
+                            _actionsService.DisplayGrid(_grid);
+                            break;
+                        case GameAction.CreateGrid:
+                            _grid = _actionsService.CreateGrid();
+                            break;
+                        case GameAction.Exit:
+                            _cliService.DisplayMessage(GameAction.Exit);
+                            activeGame = false;
+                            break;
+                        default:
+                            _cliService.DisplayMessage(GameAction.Unknown);
+                            break;
+                    }
                 }
+            }
+            else
+            {
+                _cliService.DisplayMessage(GameAction.Exception);
             }
         }
 

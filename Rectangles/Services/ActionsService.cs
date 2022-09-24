@@ -6,7 +6,7 @@ namespace Rectangles.Services
 {
     public interface IActionsService
     {
-        void DisplayGrid();
+        void DisplayGrid(Grid grid);
         void RemoveRectangle();
         void FindRectangle();
         void PlaceRectangle();
@@ -67,10 +67,34 @@ namespace Rectangles.Services
             return length >= 5 && length <= 25 && height >= 5 && height <= 25;
         }
 
-        public void DisplayGrid()
+        public void DisplayGrid(Grid grid)
         {
-            _cliService.DisplayMessage(GameAction.DisplayGrid);
-            // TODO
+            var currentChar = Ascii.First;
+            var seenRectangles = new Dictionary<Guid, char>();
+
+            foreach (var row in grid.Occupancy)
+            {
+                var rowString = string.Empty;
+                foreach (var cell in row)
+                {
+                    if (cell == Guid.Empty)
+                    {
+                        rowString += Ascii.Empty;
+                        continue;
+                    }
+                    
+                    if (seenRectangles.ContainsKey(cell))
+                    {
+                        rowString += seenRectangles[cell];
+                        continue;
+                    }
+
+                    var currentSymbol = (char)currentChar++;
+                    rowString += currentSymbol;
+                    seenRectangles[cell] = currentSymbol;
+                }
+                Console.WriteLine(rowString);
+            }
         }
 
         public void FindRectangle()
