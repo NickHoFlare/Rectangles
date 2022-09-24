@@ -48,7 +48,7 @@ namespace Rectangles.Services
                             _actionsService.FindRectangle(_grid);
                             break;
                         case GameAction.RemoveRectangle:
-                            _actionsService.RemoveRectangle();
+                            _actionsService.RemoveRectangle(_grid);
                             break;
                         case GameAction.DisplayGrid:
                             _actionsService.DisplayGrid(_grid);

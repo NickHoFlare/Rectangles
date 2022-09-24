@@ -7,7 +7,7 @@ namespace Rectangles.Services
     public interface IActionsService
     {
         void DisplayGrid(Grid grid);
-        void RemoveRectangle();
+        void RemoveRectangle(Grid grid);
         void FindRectangle(Grid grid);
         void PlaceRectangle(Grid grid);
         Grid CreateGrid();
@@ -98,51 +98,17 @@ namespace Rectangles.Services
 
         public void FindRectangle(Grid grid)
         {
-            var validParams = false;
-            var x = -1;
-            var y = -1;
+            var coordinates = ObtainCoordinatesFromInput(GameAction.RemoveRectangle, grid);
 
-            while (!validParams)
-            {
-                DisplayRectangleActionIntroPrompt(GameAction.FindRectangle, grid);
-
-                // Coordinates format: x,y
-                var regex = new Regex(@"^(\d+),(\d+)$");
-
-                var input = Console.ReadLine() ?? string.Empty;
-
-                var matches = regex.Matches(input);
-                if (matches.Count > 0)
-                {
-                    var validX = int.TryParse(matches[0].Groups[1].Value, out x);
-                    var validY = int.TryParse(matches[0].Groups[2].Value, out y);
-
-                    // Coordinates params should only be in the format x,y,
-                    // and x/y values should not exceed the bounds of the grid
-                    validParams = validX && validY && ValidateFindRectangleInput(x, y, grid);
-                }
-
-                if (!validParams)
-                {
-                    _cliService.DisplayError(Messages.InvalidInput);
-                }
-            }
-
-            // 2D arrays are referenced by array[row][column]. y represents row, x represents column
-            var rectangleId = grid.Occupancy[y][x];
+            var rectangleId = GetRectangleId(coordinates, grid);
             if (rectangleId == Guid.Empty)
             {
-                _cliService.DisplaySuccess($"Could not find a rectangle at coordinates {x},{y}");
+                _cliService.DisplaySuccess($"Did not find a rectangle at coordinates {coordinates.X},{coordinates.Y}");
             }
             else
             {
-                _cliService.DisplaySuccess($"Found a rectangle {rectangleId} at coordinates {x},{y}!");
+                _cliService.DisplaySuccess($"Found a rectangle {rectangleId} at coordinates {coordinates.Y},{coordinates.Y}!");
             }
-        }
-
-        private bool ValidateFindRectangleInput(int x, int y, Grid grid)
-        {
-            return x >= 0 && x < grid.Length && y >= 0 && y < grid.Height;
         }
 
         public void PlaceRectangle(Grid grid)
@@ -186,7 +152,7 @@ namespace Rectangles.Services
             if (isNotOverlapping)
             {
                 grid.Rectangles[rectangle.Guid] = rectangle;
-                AddNewRectangleOccupancy(rectangle, grid);
+                UpdateRectangleOccupancy(rectangle, grid);
             }
             else
             {
@@ -216,22 +182,93 @@ namespace Rectangles.Services
             return true;
         }
 
-        // TODO: This can be reused for clearing a rectangle from a grid
-        private void AddNewRectangleOccupancy(Rectangle rectangle, Grid grid)
+        public void RemoveRectangle(Grid grid)
+        {
+            var coordinates = ObtainCoordinatesFromInput(GameAction.RemoveRectangle, grid);
+
+            var rectangleId = GetRectangleId(coordinates, grid);
+            if (rectangleId == Guid.Empty)
+            {
+                _cliService.DisplaySuccess($"Did not find a rectangle at coordinates {coordinates.X},{coordinates.Y}");
+            }
+            else
+            {
+                UpdateRectangleOccupancy(grid.Rectangles[rectangleId], grid, clearRectangle: true);
+                _cliService.DisplaySuccess($"Removed rectangle at coordinates {coordinates.X},{coordinates.Y}");
+            }
+        }
+
+        /// <summary>
+        /// Given a user's action and the Grid, prompt the user to provide x,y coordinates.
+        /// This functionality can be shared amongst several game actions e.g. Find and Remove Rectangle
+        /// </summary>
+        /// <param name="gameAction"></param>
+        /// <param name="grid"></param>
+        /// <returns></returns>
+        private Coordinates ObtainCoordinatesFromInput(string gameAction, Grid grid)
+        {
+            var validParams = false;
+            var x = -1;
+            var y = -1;
+
+            while (!validParams)
+            {
+                DisplayRectangleActionIntroPrompt(gameAction, grid);
+
+                // Coordinates format: x,y
+                var regex = new Regex(@"^(\d+),(\d+)$");
+
+                var input = Console.ReadLine() ?? string.Empty;
+
+                var matches = regex.Matches(input);
+                if (matches.Count > 0)
+                {
+                    var validX = int.TryParse(matches[0].Groups[1].Value, out x);
+                    var validY = int.TryParse(matches[0].Groups[2].Value, out y);
+
+                    // Coordinates params should only be in the format x,y,
+                    // and x/y values should not exceed the bounds of the grid
+                    validParams = validX && validY && ValidateCoordinatesInput(x, y, grid);
+                }
+
+                if (!validParams)
+                {
+                    _cliService.DisplayError(Messages.InvalidInput);
+                }
+            }
+
+            return new Coordinates(x, y);
+        }
+
+        private bool ValidateCoordinatesInput(int x, int y, Grid grid)
+        {
+            return x >= 0 && x < grid.Length && y >= 0 && y < grid.Height;
+        }
+
+        private Guid GetRectangleId(Coordinates coordinates, Grid grid)
+        {
+            // 2D arrays are referenced by array[row][column]. y represents row, x represents column
+            return grid.Occupancy[coordinates.Y][coordinates.X];
+        }
+
+        /// <summary>
+        /// Given a Rectangle and Grid objects, edit the occupancy of the grid,
+        /// in accordance to the Rectangle's footprint on the grid.
+        /// Assign the new Rectangle's GUID by default.
+        /// If an optional clearRectangle flag is provided, clear the cell to Guid.Empty
+        /// </summary>
+        /// <param name="rectangle"></param>
+        /// <param name="grid"></param>
+        /// <param name="clearRectangle"></param>
+        private void UpdateRectangleOccupancy(Rectangle rectangle, Grid grid, bool clearRectangle = false)
         {
             for (var i = rectangle.TopLeft.X; i <= rectangle.BottomRight.X; i++)
             {
                 for (var j = rectangle.TopLeft.Y; j <= rectangle.BottomRight.Y; j++)
                 {
-                    grid.Occupancy[j][i] = rectangle.Guid;
+                    grid.Occupancy[j][i] = clearRectangle ? Guid.Empty : rectangle.Guid;
                 }
             }
-        }
-
-        public void RemoveRectangle()
-        {
-            DisplayIntroPrompt(GameAction.RemoveRectangle);
-            // TODO
         }
 
         /// <summary>
