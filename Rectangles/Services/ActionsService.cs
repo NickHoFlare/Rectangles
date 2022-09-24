@@ -8,7 +8,7 @@ namespace Rectangles.Services
     {
         void DisplayGrid(Grid grid);
         void RemoveRectangle();
-        void FindRectangle();
+        void FindRectangle(Grid grid);
         void PlaceRectangle();
         Grid CreateGrid();
     }
@@ -25,13 +25,12 @@ namespace Rectangles.Services
         public Grid CreateGrid()
         {
             var validParams = false;
-            var length = 0;
-            var height = 0;
+            var length = -1;
+            var height = -1;
 
             while (!validParams)
             {
-                _cliService.DisplayMessage(GameAction.CreateGrid);
-                Console.Write(Messages.CommandPrompt);
+                DisplayIntroPrompt(GameAction.CreateGrid);
 
                 // Grid creation format: length,height
                 var regex = new Regex(@"^(\d+),(\d+)$");
@@ -97,22 +96,77 @@ namespace Rectangles.Services
             }
         }
 
-        public void FindRectangle()
+        public void FindRectangle(Grid grid)
         {
-            _cliService.DisplayMessage(GameAction.FindRectangle);
-            // TODO
+            var validParams = false;
+            var x = -1;
+            var y = -1;
+
+            while (!validParams)
+            {
+                _cliService.DisplaySuccess($"The size of your grid is length:{grid.Length} and height:{grid.Height}");
+                DisplayIntroPrompt(GameAction.FindRectangle);
+
+                // Coordinates format: x,y
+                var regex = new Regex(@"^(\d+),(\d+)$");
+
+                var input = Console.ReadLine() ?? string.Empty;
+
+                var matches = regex.Matches(input);
+                if (matches.Count > 0)
+                {
+                    var validX = int.TryParse(matches[0].Groups[1].Value, out x);
+                    var validY = int.TryParse(matches[0].Groups[2].Value, out y);
+
+                    // Coordinates params should only be in the format x,y,
+                    // and x/y values should not exceed the bounds of the grid
+                    validParams = validX && validY && ValidateFindRectangleInput(x, y, grid);
+                }
+
+                if (!validParams)
+                {
+                    _cliService.DisplayError("Invalid coordinates, please try again");
+                }
+            }
+
+            // 2D arrays are referenced by array[row][column]. y represents row, x represents column
+            var rectangleId = grid.Occupancy[y][x];
+            if (rectangleId == Guid.Empty)
+            {
+                _cliService.DisplaySuccess($"Could not find a rectangle at coordinates {x},{y}");
+            }
+            else
+            {
+                _cliService.DisplaySuccess($"Found a rectangle {rectangleId} at coordinates {x},{y}!");
+            }
+        }
+
+        private bool ValidateFindRectangleInput(int x, int y, Grid grid)
+        {
+            return x >= 0 && x < grid.Length && y >= 0 && y < grid.Height;
         }
 
         public void PlaceRectangle()
         {
-            _cliService.DisplayMessage(GameAction.PlaceRectangle);
+            DisplayIntroPrompt(GameAction.PlaceRectangle);
             // TODO
         }
 
         public void RemoveRectangle()
         {
-            _cliService.DisplayMessage(GameAction.RemoveRectangle);
+            DisplayIntroPrompt(GameAction.RemoveRectangle);
             // TODO
+        }
+
+        /// <summary>
+        /// Depending on which action the user chose from the main menu,
+        /// this displays the introductory prompt for that action.
+        /// </summary>
+        /// <param name="gameAction"></param>
+        private void DisplayIntroPrompt(string gameAction)
+        {
+            _cliService.DisplayMessage(gameAction);
+            Console.Write(Messages.CommandPrompt);
         }
     }
 }

@@ -18,7 +18,7 @@ CREATE a new grid (reset)
 show this MENU
 
 EXIT rectangles";
-            public const string FirstGridCreationInstruction = @"First of all, let's create a grid. To exit, type ""exit""";
+            public const string FirstGridCreationInstruction = "First of all, let's create a grid.";
             public const string GridCreationInstruction = @"Please provide a length and height in the format ""length,height""";
             public const string AdditionalGridCreationInstruction = "A grid must have a width and height of no less than 5 and no greater than 25";
             public const string ExampleGridInput = "Example: 10,12";
