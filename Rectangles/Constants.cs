@@ -29,6 +29,7 @@ EXIT rectangles";
             public const string ExampleCoordinatesInput = "Example: 6,10";
             public const string CommandPrompt = "> ";
             public const string UnrecognizedInput = "Input not recognized. Please try again";
+            public const string InvalidInput = "Invalid input. Please try again";
             public const string Exception = "Something went wrong. Press any key to exit";
         }
 

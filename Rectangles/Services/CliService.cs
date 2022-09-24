@@ -31,6 +31,7 @@ namespace Rectangles.Services
     {
         public void DisplayMessage(string action)
         {
+            // TODO: Use Strategy pattern
             switch (action)
             {
                 case GameAction.Welcome:

@@ -42,7 +42,7 @@ namespace Rectangles.Services
                             _cliService.DisplayMessage(GameAction.Menu);
                             break;
                         case GameAction.PlaceRectangle:
-                            _actionsService.PlaceRectangle();
+                            _actionsService.PlaceRectangle(_grid);
                             break;
                         case GameAction.FindRectangle:
                             _actionsService.FindRectangle(_grid);

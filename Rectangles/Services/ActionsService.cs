@@ -9,7 +9,7 @@ namespace Rectangles.Services
         void DisplayGrid(Grid grid);
         void RemoveRectangle();
         void FindRectangle(Grid grid);
-        void PlaceRectangle();
+        void PlaceRectangle(Grid grid);
         Grid CreateGrid();
     }
 
@@ -50,7 +50,7 @@ namespace Rectangles.Services
 
                 if (!validParams)
                 {
-                    _cliService.DisplayError("Invalid length or height, please try again");
+                    _cliService.DisplayError(Messages.InvalidInput);
                 }
             }
 
@@ -104,8 +104,7 @@ namespace Rectangles.Services
 
             while (!validParams)
             {
-                _cliService.DisplaySuccess($"The size of your grid is length:{grid.Length} and height:{grid.Height}");
-                DisplayIntroPrompt(GameAction.FindRectangle);
+                DisplayRectangleActionIntroPrompt(GameAction.FindRectangle, grid);
 
                 // Coordinates format: x,y
                 var regex = new Regex(@"^(\d+),(\d+)$");
@@ -125,7 +124,7 @@ namespace Rectangles.Services
 
                 if (!validParams)
                 {
-                    _cliService.DisplayError("Invalid coordinates, please try again");
+                    _cliService.DisplayError(Messages.InvalidInput);
                 }
             }
 
@@ -146,10 +145,87 @@ namespace Rectangles.Services
             return x >= 0 && x < grid.Length && y >= 0 && y < grid.Height;
         }
 
-        public void PlaceRectangle()
+        public void PlaceRectangle(Grid grid)
         {
-            DisplayIntroPrompt(GameAction.PlaceRectangle);
-            // TODO
+            var validParams = false;
+            var length = -1;
+            var height = -1;
+            var x = -1;
+            var y = -1;
+
+            while (!validParams)
+            {
+                DisplayRectangleActionIntroPrompt(GameAction.PlaceRectangle, grid);
+
+                // Coordinates format: x,y
+                var regex = new Regex(@"^(\d+),(\d+),(\d+),(\d+)$");
+
+                var input = Console.ReadLine() ?? string.Empty;
+
+                var matches = regex.Matches(input);
+                if (matches.Count > 0)
+                {
+                    var validLength = int.TryParse(matches[0].Groups[1].Value, out length);
+                    var validHeight = int.TryParse(matches[0].Groups[2].Value, out height);
+                    var validX = int.TryParse(matches[0].Groups[3].Value, out x);
+                    var validY = int.TryParse(matches[0].Groups[4].Value, out y);
+
+                    // Coordinates params should only be in the format length,height,x,y,
+                    // length/height values are non-zero, and the rectangle's footprint should fit in the grid
+                    validParams = validLength && validHeight && validX && validY && ValidatePlaceRectangleInput(length, height, x, y, grid);
+                }
+
+                if (!validParams)
+                {
+                    _cliService.DisplayError(Messages.InvalidInput);
+                }
+            }
+
+            var rectangle = new Rectangle(x, y, length, height);
+            var isNotOverlapping = ConfirmNotOverlapping(rectangle, grid);
+            if (isNotOverlapping)
+            {
+                grid.Rectangles[rectangle.Guid] = rectangle;
+                AddNewRectangleOccupancy(rectangle, grid);
+            }
+            else
+            {
+                _cliService.DisplayError($"There is already a rectangle present at {x},{y}, unable to place new rectangle.");
+            }
+        }
+
+        private bool ValidatePlaceRectangleInput(int length, int height, int x, int y, Grid grid)
+        {
+            var bottomRight = new Coordinates(x + (length-1), y + (height-1));
+
+            return length > 0 && height > 0 && bottomRight.X < grid.Length && bottomRight.Y < grid.Height;
+        }
+
+        private bool ConfirmNotOverlapping(Rectangle rectangle, Grid grid)
+        {
+            for (var i = rectangle.TopLeft.X; i <= rectangle.BottomRight.X; i++)
+            {
+                for (var j = rectangle.TopLeft.Y; j <= rectangle.BottomRight.Y; j++)
+                {
+                    if (grid.Occupancy[j][i] != Guid.Empty)
+                    {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+
+        // TODO: This can be reused for clearing a rectangle from a grid
+        private void AddNewRectangleOccupancy(Rectangle rectangle, Grid grid)
+        {
+            for (var i = rectangle.TopLeft.X; i <= rectangle.BottomRight.X; i++)
+            {
+                for (var j = rectangle.TopLeft.Y; j <= rectangle.BottomRight.Y; j++)
+                {
+                    grid.Occupancy[j][i] = rectangle.Guid;
+                }
+            }
         }
 
         public void RemoveRectangle()
@@ -167,6 +243,16 @@ namespace Rectangles.Services
         {
             _cliService.DisplayMessage(gameAction);
             Console.Write(Messages.CommandPrompt);
+        }
+
+        /// <summary>
+        /// Does the same thing as DisplayIntroPrompt, but also provides information about an existing grid
+        /// </summary>
+        /// <param name="gameAction"></param>
+        private void DisplayRectangleActionIntroPrompt(string gameAction, Grid grid)
+        {
+            _cliService.DisplaySuccess($"The size of your grid is length:{grid.Length} and height:{grid.Height}");
+            DisplayIntroPrompt(gameAction);
         }
     }
 }
