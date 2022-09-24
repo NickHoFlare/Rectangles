@@ -36,6 +36,7 @@ namespace Rectangles.Services
                 Console.Write(Messages.CommandPrompt);
 
                 var input = Console.ReadLine() ?? string.Empty;
+
                 switch (input.ToUpperInvariant())
                 {
                     case GameAction.Menu:
@@ -71,6 +72,7 @@ namespace Rectangles.Services
         {
             _cliService.DisplayMessage(GameAction.Welcome);
             _grid = _actionsService.CreateGrid();
+            _cliService.DisplayMessage(GameAction.Menu);
         }
     }
 }
