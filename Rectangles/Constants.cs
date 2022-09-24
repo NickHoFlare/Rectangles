@@ -14,6 +14,7 @@ PLACE a rectangle
 FIND a rectangle
 REMOVE a rectangle
 DISPLAY the grid
+LIST all rectangles
 CREATE a new grid (reset)
 show this MENU
 
@@ -41,6 +42,7 @@ EXIT rectangles";
             public const string FindRectangle = "FIND";
             public const string RemoveRectangle = "REMOVE";
             public const string DisplayGrid = "DISPLAY";
+            public const string ListRectangles = "LIST";
             public const string CreateGrid = "CREATE";
             public const string Exit = "EXIT";
             public const string Unknown = "UNKNOWN";

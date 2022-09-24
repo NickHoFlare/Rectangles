@@ -10,6 +10,7 @@ namespace Rectangles.Services
         void RemoveRectangle(Grid grid);
         void FindRectangle(Grid grid);
         void PlaceRectangle(Grid grid);
+        void ListRectangles(Grid grid);
         Grid CreateGrid();
     }
 
@@ -182,6 +183,15 @@ namespace Rectangles.Services
             return true;
         }
 
+        public void ListRectangles(Grid grid)
+        {
+            _cliService.DisplaySuccess($"{grid.Rectangles.Count} rectangles found");
+            foreach (var rectangle in grid.Rectangles)
+            {
+                Console.WriteLine($"{rectangle.Key} -> ({rectangle.Value.TopLeft.X},{rectangle.Value.TopLeft.Y})");
+            }
+        }
+
         public void RemoveRectangle(Grid grid)
         {
             var coordinates = ObtainCoordinatesFromInput(GameAction.RemoveRectangle, grid);
@@ -194,6 +204,7 @@ namespace Rectangles.Services
             else
             {
                 UpdateRectangleOccupancy(grid.Rectangles[rectangleId], grid, clearRectangle: true);
+                grid.Rectangles.Remove(rectangleId);
                 _cliService.DisplaySuccess($"Removed rectangle at coordinates {coordinates.X},{coordinates.Y}");
             }
         }

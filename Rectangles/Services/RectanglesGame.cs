@@ -53,6 +53,9 @@ namespace Rectangles.Services
                         case GameAction.DisplayGrid:
                             _actionsService.DisplayGrid(_grid);
                             break;
+                        case GameAction.ListRectangles:
+                            _actionsService.ListRectangles(_grid);
+                            break;
                         case GameAction.CreateGrid:
                             _grid = _actionsService.CreateGrid();
                             break;
