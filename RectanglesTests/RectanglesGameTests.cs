@@ -33,7 +33,8 @@ namespace RectanglesTests
         public void Run_WhenFirstTimeGridCreationSucceedsAndUserRequestsMenu_ShouldInvokeCliServiceDisplayMenu(string input)
         {
             /* Arrange */
-            _actionsService.CreateGrid(Arg.Any<Dimensions>()).Returns(new Grid(0,0));
+            _actionsService.CreateGrid(Arg.Any<Dimensions>()).Returns(new Grid(5,5));
+            _promptService.GetCreateGridDimensions().Returns(new Dimensions(5,5));
             _gameActionStrategyContext.SetStrategy(Arg.Any<MenuStrategy>()).Execute(Arg.Any<Grid>()).Returns(null);
             var output = new StringWriter();
             Console.SetOut(output);
@@ -58,7 +59,8 @@ namespace RectanglesTests
         public void Run_WhenFirstTimeGridCreationSucceedsAndUserRequestsPlaceRectangle_ShouldInvokeActionServicePlaceRectangle(string input)
         {
             /* Arrange */
-            _actionsService.CreateGrid(Arg.Any<Dimensions>()).Returns(new Grid(0, 0));
+            _actionsService.CreateGrid(Arg.Any<Dimensions>()).Returns(new Grid(5, 5));
+            _promptService.GetCreateGridDimensions().Returns(new Dimensions(5, 5));
             var output = new StringWriter();
             Console.SetOut(output);
             var userInput = new StringReader(input + "\r\n" + GameAction.Exit);
@@ -80,7 +82,8 @@ namespace RectanglesTests
         public void Run_WhenFirstTimeGridCreationSucceedsAndUserRequestsFindRectangle_ShouldInvokeActionServiceFindRectangle(string input)
         {
             /* Arrange */
-            _actionsService.CreateGrid(Arg.Any<Dimensions>()).Returns(new Grid(0, 0));
+            _actionsService.CreateGrid(Arg.Any<Dimensions>()).Returns(new Grid(5, 5));
+            _promptService.GetCreateGridDimensions().Returns(new Dimensions(5, 5));
             var output = new StringWriter();
             Console.SetOut(output);
             var userInput = new StringReader(input + "\r\n" + GameAction.Exit);
@@ -102,7 +105,8 @@ namespace RectanglesTests
         public void Run_WhenFirstTimeGridCreationSucceedsAndUserRequestsRemoveRectangle_ShouldInvokeActionServiceRemoveRectangle(string input)
         {
             /* Arrange */
-            _actionsService.CreateGrid(Arg.Any<Dimensions>()).Returns(new Grid(0, 0));
+            _actionsService.CreateGrid(Arg.Any<Dimensions>()).Returns(new Grid(5, 5));
+            _promptService.GetCreateGridDimensions().Returns(new Dimensions(5, 5));
             var output = new StringWriter();
             Console.SetOut(output);
             var userInput = new StringReader(input + "\r\n" + GameAction.Exit);
@@ -124,7 +128,8 @@ namespace RectanglesTests
         public void Run_WhenFirstTimeGridCreationSucceedsAndUserRequestsDisplayGrid_ShouldInvokeActionServiceDisplayGrid(string input)
         {
             /* Arrange */
-            _actionsService.CreateGrid(Arg.Any<Dimensions>()).Returns(new Grid(0, 0));
+            _actionsService.CreateGrid(Arg.Any<Dimensions>()).Returns(new Grid(5, 5));
+            _promptService.GetCreateGridDimensions().Returns(new Dimensions(5, 5));
             var output = new StringWriter();
             Console.SetOut(output);
             var userInput = new StringReader(input + "\r\n" + GameAction.Exit);
@@ -146,7 +151,8 @@ namespace RectanglesTests
         public void Run_WhenFirstTimeGridCreationSucceedsAndUserRequestsListRectangles_ShouldInvokeActionServiceListRectangles(string input)
         {
             /* Arrange */
-            _actionsService.CreateGrid(Arg.Any<Dimensions>()).Returns(new Grid(0, 0));
+            _actionsService.CreateGrid(Arg.Any<Dimensions>()).Returns(new Grid(5, 5));
+            _promptService.GetCreateGridDimensions().Returns(new Dimensions(5, 5));
             var output = new StringWriter();
             Console.SetOut(output);
             var userInput = new StringReader(input + "\r\n" + GameAction.Exit);
@@ -169,6 +175,7 @@ namespace RectanglesTests
         {
             /* Arrange */
             _actionsService.CreateGrid(Arg.Any<Dimensions>()).Returns(new Grid(5, 5));
+            _promptService.GetCreateGridDimensions().Returns(new Dimensions(5, 5));
             var output = new StringWriter();
             Console.SetOut(output);
             var userInput = new StringReader(input + "\r\n" + GameAction.Exit);
@@ -190,7 +197,8 @@ namespace RectanglesTests
         public void Run_WhenFirstTimeGridCreationSucceedsAndUserTypesGibberish_ShouldInvokeCliServiceDisplayUnrecognizedInput(string input)
         {
             /* Arrange */
-            _actionsService.CreateGrid(Arg.Any<Dimensions>()).Returns(new Grid(0, 0));
+            _actionsService.CreateGrid(Arg.Any<Dimensions>()).Returns(new Grid(5, 5));
+            _promptService.GetCreateGridDimensions().Returns(new Dimensions(5, 5));
             var output = new StringWriter();
             Console.SetOut(output);
             var userInput = new StringReader(input + "\r\n" + GameAction.Exit);
