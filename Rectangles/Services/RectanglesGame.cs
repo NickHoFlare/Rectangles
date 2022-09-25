@@ -30,7 +30,7 @@ namespace Rectangles.Services
 
             try
             {
-                // trigger first-time setup of grid
+                // trigger first-time setup of grid. This is non-skippable.
                 FirstTimeSetup();
             
                 // Begin game loop. grid should be initialized at this point.
@@ -101,6 +101,7 @@ namespace Rectangles.Services
             _cliService.DisplayMessage(GameAction.Welcome);
             var dimensions = _promptService.GetCreateGridDimensions();
             _grid = _actionsService.CreateGrid(dimensions);
+            _cliService.DisplaySuccess($"New grid created with length of {dimensions.Length} and height of {dimensions.Height}");
             _cliService.DisplayMessage(GameAction.Menu);
         }
     }

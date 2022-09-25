@@ -10,15 +10,15 @@
 +-----------------------+";
             public const string Menu =
 @"Please pick an option:
-PLACE a rectangle
-FIND a rectangle
-REMOVE a rectangle
-DISPLAY the grid
-LIST all rectangles
-CREATE a new grid (reset)
-show this MENU
+[PLACE] a rectangle
+[FIND] a rectangle
+[REMOVE] a rectangle
+[DISPLAY] the grid
+[LIST] all rectangles
+[CREATE] a new grid (reset)
+show this [MENU]
 
-EXIT rectangles";
+[EXIT] rectangles";
             public const string FirstGridCreationInstruction = "First of all, let's create a grid.";
             public const string GridCreationInstruction = @"Please provide a length and height in the format ""length,height""";
             public const string AdditionalGridCreationInstruction = "A grid must have a width and height of no less than 5 and no greater than 25";

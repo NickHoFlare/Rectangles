@@ -8,6 +8,9 @@ namespace Rectangles.Services
         object? Execute(Grid grid);
     }
 
+    /// <summary>
+    /// MenuStrategy displays the menu
+    /// </summary>
     public class MenuStrategy : IGameActionStrategy
     {
         private readonly ICliService _cliService;
@@ -24,6 +27,13 @@ namespace Rectangles.Services
         }
     }
 
+    /// <summary>
+    /// PlaceRectangleStrategy requests input from the user, then determines if the rectangle is valid,
+    /// before committing it to the Grid.
+    /// 
+    /// Rectangles must not extend beyond the edge of the grid.
+    /// Rectangles must not overlap.
+    /// </summary>
     public class PlaceRectangleStrategy : IGameActionStrategy
     {
         private readonly ICliService _cliService;
@@ -54,6 +64,10 @@ namespace Rectangles.Services
         }
     }
 
+    /// <summary>
+    /// FindRectangleStrategy requests input from the user, then determines if a rectangle is present on the grid, with the provided
+    /// coordinates.
+    /// </summary>
     public class FindRectangleStrategy : IGameActionStrategy
     {
         private readonly ICliService _cliService;
@@ -84,6 +98,11 @@ namespace Rectangles.Services
         }
     }
 
+    /// <summary>
+    /// RemoveRectangleStrategy requests input from the user, then determines if a rectangle is present on the grid, with the provided
+    /// coordinates.
+    /// If the rectangle is present, it is removed from the state of the Grid. Otherwise, nothing is committed.
+    /// </summary>
     public class RemoveRectangleStrategy : IGameActionStrategy
     {
         private readonly ICliService _cliService;
@@ -114,6 +133,11 @@ namespace Rectangles.Services
         }
     }
 
+    /// <summary>
+    /// DisplayGridStrategy shows the state of the Grid and its Rectangles as ASCII art.
+    /// Each unique Rectangle is represented by a unique ASCII character.
+    /// Empty cells are represented by '#'.
+    /// </summary>
     public class DisplayGridStrategy : IGameActionStrategy
     {
         private readonly IActionsService _actionsService;
@@ -130,6 +154,11 @@ namespace Rectangles.Services
         }
     }
 
+    /// <summary>
+    /// ListRectanglesStrategy shows the list of Rectangles that are currently committed to the Grid.
+    /// While the "Display" command shows the Grid state pictorially, this strategy will provide details
+    /// of how many Rectangles there currently are on the Grid, as well as their unique identifiers.
+    /// </summary>
     public class ListRectanglesStrategy : IGameActionStrategy
     {
         private readonly IActionsService _actionsService;
@@ -146,6 +175,13 @@ namespace Rectangles.Services
         }
     }
 
+    /// <summary>
+    /// CreateGridStrategy requests input from the user, then creates a new Grid. 
+    /// This will overwrite the state of any existing Grid and replace it with the new one.
+    /// 
+    /// A grid must have a width and height of no less than 5 and no greater than 25
+    /// Positions on the grid are non-negative integer coordinates starting at 0
+    /// </summary>
     public class CreateGridStrategy : IGameActionStrategy
     {
         private readonly ICliService _cliService;
