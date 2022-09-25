@@ -8,6 +8,8 @@ var serviceProvider = new ServiceCollection()
     .AddSingleton<IRectanglesGame, RectanglesGame>()
     .AddSingleton<ICliService, CliService>()
     .AddSingleton<IActionsService, ActionsService>()
+    .AddSingleton<IPromptService, PromptService>()
+    .AddSingleton<IGameActionStrategyContext, GameActionStrategyContext>()
     .BuildServiceProvider();
 
 // Program begins here

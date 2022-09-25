@@ -1,6 +1,12 @@
 ﻿namespace Rectangles.Models
 {
-    public class Coordinates
+    public interface ICoordinates
+    {
+        int X { get; }
+        int Y { get; }
+    }
+
+    public class Coordinates : ICoordinates
     {
         public Coordinates(int x, int y)
         {

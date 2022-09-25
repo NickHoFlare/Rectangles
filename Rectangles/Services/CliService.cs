@@ -31,7 +31,6 @@ namespace Rectangles.Services
     {
         public void DisplayMessage(string action)
         {
-            // TODO: Use Strategy pattern
             switch (action)
             {
                 case GameAction.Welcome:
@@ -55,6 +54,9 @@ namespace Rectangles.Services
                     Console.WriteLine(Messages.GridCreationInstruction);
                     Console.WriteLine(Messages.AdditionalGridCreationInstruction);
                     Console.WriteLine(Messages.ExampleGridInput);
+                    break;
+                case GameAction.Exception:
+                    Console.WriteLine(Messages.Exception);
                     break;
                 default:
                     Console.WriteLine(Messages.UnrecognizedInput);

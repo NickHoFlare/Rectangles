@@ -1,6 +1,6 @@
 ﻿namespace Rectangles.Models
 {
-    public class Rectangle
+    public class Rectangle : IDimensions
     {
         public Rectangle(int x, int y, int length, int height)
         {

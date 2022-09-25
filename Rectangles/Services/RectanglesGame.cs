@@ -11,56 +11,76 @@ namespace Rectangles.Services
     public class RectanglesGame : IRectanglesGame
     {
         private readonly ICliService _cliService;
+        private readonly IPromptService _promptService;
         private readonly IActionsService _actionsService;
+        private readonly IGameActionStrategyContext _gameActionStrategyContext;
         private Grid? _grid;
         
-        public RectanglesGame(ICliService cliService, IActionsService actionsService)
+        public RectanglesGame(ICliService cliService, IPromptService promptService, IActionsService actionsService, IGameActionStrategyContext gameActionStrategyContext)
         {
             _cliService = cliService;
+            _promptService = promptService;
             _actionsService = actionsService;
+            _gameActionStrategyContext = gameActionStrategyContext;
         }
 
         public void Run()
         {
             var activeGame = true;
-            
-            // trigger first-time setup of grid
-            FirstTimeSetup();
 
-            if (_grid != null)
+            try
             {
-                // Begin game loop
+                // trigger first-time setup of grid
+                FirstTimeSetup();
+            
+                // Begin game loop. grid should be initialized at this point.
                 while (activeGame)
                 {
                     Console.Write(Messages.CommandPrompt);
 
                     var input = Console.ReadLine() ?? string.Empty;
-
+                
                     switch (input.ToUpperInvariant())
                     {
                         case GameAction.Menu:
-                            _cliService.DisplayMessage(GameAction.Menu);
+                            _gameActionStrategyContext
+                                .SetStrategy(new MenuStrategy(_cliService))
+                                .Execute(_grid);
                             break;
                         case GameAction.PlaceRectangle:
-                            _actionsService.PlaceRectangle(_grid);
+                            _gameActionStrategyContext
+                                .SetStrategy(new PlaceRectangleStrategy(_cliService, _promptService, _actionsService))
+                                .Execute(_grid);
                             break;
                         case GameAction.FindRectangle:
-                            _actionsService.FindRectangle(_grid);
+                            _gameActionStrategyContext
+                                .SetStrategy(new FindRectangleStrategy(_cliService, _promptService, _actionsService))
+                                .Execute(_grid);
                             break;
                         case GameAction.RemoveRectangle:
-                            _actionsService.RemoveRectangle(_grid);
+                            _gameActionStrategyContext
+                                .SetStrategy(new RemoveRectangleStrategy(_cliService, _promptService, _actionsService))
+                                .Execute(_grid);
                             break;
                         case GameAction.DisplayGrid:
-                            _actionsService.DisplayGrid(_grid);
+                            _gameActionStrategyContext
+                                .SetStrategy(new DisplayGridStrategy(_actionsService))
+                                .Execute(_grid);
                             break;
                         case GameAction.ListRectangles:
-                            _actionsService.ListRectangles(_grid);
+                            _gameActionStrategyContext
+                                .SetStrategy(new ListRectanglesStrategy(_actionsService))
+                                .Execute(_grid);
                             break;
                         case GameAction.CreateGrid:
-                            _grid = _actionsService.CreateGrid();
+                            _grid = _gameActionStrategyContext
+                                .SetStrategy(new CreateGridStrategy(_cliService, _promptService, _actionsService))
+                                .Execute(_grid) as Grid;
                             break;
                         case GameAction.Exit:
-                            _cliService.DisplayMessage(GameAction.Exit);
+                            _gameActionStrategyContext
+                                .SetStrategy(new ExitStrategy())
+                                .Execute(_grid);
                             activeGame = false;
                             break;
                         default:
@@ -69,8 +89,9 @@ namespace Rectangles.Services
                     }
                 }
             }
-            else
+            catch (Exception ex)
             {
+                _cliService.DisplayError(ex.Message);
                 _cliService.DisplayMessage(GameAction.Exception);
             }
         }
@@ -78,7 +99,8 @@ namespace Rectangles.Services
         private void FirstTimeSetup()
         {
             _cliService.DisplayMessage(GameAction.Welcome);
-            _grid = _actionsService.CreateGrid();
+            var dimensions = _promptService.GetCreateGridDimensions();
+            _grid = _actionsService.CreateGrid(dimensions);
             _cliService.DisplayMessage(GameAction.Menu);
         }
     }
